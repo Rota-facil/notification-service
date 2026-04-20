@@ -18,16 +18,10 @@ public class RabbitConfig {
     @Value("${rabbitmq.transport.exchange}")
     private String transportExchange;
 
-//    @Value("${rabbitmq.notification.route.finished.queue}")
-//    private String routeFinishedQueue;
+    @Value("${rabbitmq.notification.trip.cancelled.queue}")
+    private String tripCancelledQueue;
 
-    @Value("${rabbitmq.notification.route.cancelled.queue}")
-    private String routeCancelledQueue;
-
-//    @Value("${rabbitmq.route.finished.routing.key}")
-//    private String routeFinishedRoutingKey;
-
-    @Value("${rabbitmq.route.cancelled.routing.key}")
+    @Value("${rabbitmq.trip.cancelled.routing.key}")
     private String routeCancelledRoutingKey;
 
     @Bean
@@ -68,7 +62,7 @@ public class RabbitConfig {
 
     @Bean
     public Queue routeCancelledQueue() {
-        return new Queue(routeCancelledQueue);
+        return new Queue(tripCancelledQueue);
     }
 
 //    @Bean
