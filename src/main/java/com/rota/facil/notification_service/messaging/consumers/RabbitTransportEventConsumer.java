@@ -5,10 +5,12 @@ import com.rota.facil.notification_service.messaging.dto.receive.TransportRouteC
 import com.rota.facil.notification_service.messaging.mappers.TripCancelledTemplateVariablesMapper;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class RabbitTransportEventConsumer {
@@ -26,11 +28,18 @@ public class RabbitTransportEventConsumer {
     String templatePath = "emails/trip-cancelled";
 
     if (
-      transportRouteCancelledEventReceive.subscribes() == null ||
-      transportRouteCancelledEventReceive.subscribes().isEmpty()
+      transportRouteCancelledEventReceive.subscribers() == null ||
+      transportRouteCancelledEventReceive.subscribers().isEmpty()
     ) {
+      log.warn("Evento de cancelamento recebido sem subscribers");
+
       return;
     }
+
+    log.info(
+      "Iniciando envio de emails de cancelamento. subscribers={}",
+      transportRouteCancelledEventReceive.subscribers().size()
+    );
 
     Map<String, Object> baseVariables =
       tripCancelledTemplateMapper.createBaseVariables(
@@ -38,7 +47,7 @@ public class RabbitTransportEventConsumer {
       );
 
     transportRouteCancelledEventReceive
-      .subscribes()
+      .subscribers()
       .stream()
       .filter(sub -> !sub.email().isBlank() && !sub.name().isBlank())
       .forEach(sub -> {
@@ -51,5 +60,9 @@ public class RabbitTransportEventConsumer {
           baseVariables
         );
       });
+
+    log.info(
+      "Finalizado processamento do envio de emails do evento de rotas canceladas"
+    );
   }
 }
