@@ -63,8 +63,11 @@
                   A rota programada de
                   <strong th:text="${origin}">Origem</strong> para
                   <strong th:text="${destination}">Destino</strong>, prevista
-                  para <strong th:text="${date}">Data</strong>, foi
-                  <strong style="color: #dc2626">cancelada</strong>.
+                  para
+                  <strong
+                    th:text="${#temporals.format(date, 'dd/MM/yyyy HH:mm')}"
+                    >Data</strong
+                  >, foi <strong style="color: #dc2626">cancelada</strong>.
                 </p>
 
                 <!-- Motivo dinâmico -->
