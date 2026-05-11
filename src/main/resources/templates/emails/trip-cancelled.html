@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Rota Cancelada</title>
+  </head>
+
+  <body
+    style="
+      margin: 0;
+      padding: 0;
+      background-color: #f4f6f8;
+      font-family: Arial, Helvetica, sans-serif;
+    "
+  >
+    <table
+      width="100%"
+      cellpadding="0"
+      cellspacing="0"
+      style="background-color: #f4f6f8; padding: 40px 0"
+    >
+      <tr>
+        <td align="center">
+          <table
+            width="600"
+            cellpadding="0"
+            cellspacing="0"
+            style="
+              background: #ffffff;
+              border-radius: 12px;
+              overflow: hidden;
+              box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            "
+          >
+            <!-- Header -->
+            <tr>
+              <td style="background: #1e293b; padding: 24px 32px">
+                <h1
+                  style="
+                    color: #ffffff;
+                    margin: 0;
+                    font-size: 20px;
+                    font-weight: 600;
+                  "
+                >
+                  Atualização de Rota
+                </h1>
+              </td>
+            </tr>
+
+            <!-- Content -->
+            <tr>
+              <td style="padding: 32px; color: #334155">
+                <!-- Saudação -->
+                <p style="margin: 0 0 16px 0; font-size: 16px">
+                  Olá, <strong th:text="${name}">Usuário</strong>,
+                </p>
+
+                <!-- Contexto da rota -->
+                <p
+                  style="margin: 0 0 16px 0; font-size: 15px; line-height: 1.6"
+                >
+                  A rota programada de
+                  <strong th:text="${origin}">Origem</strong> para
+                  <strong th:text="${destination}">Destino</strong>, prevista
+                  para
+                  <strong
+                    th:text="${#temporals.format(date, 'dd/MM/yyyy HH:mm')}"
+                    >Data</strong
+                  >, foi <strong style="color: #dc2626">cancelada</strong>.
+                </p>
+
+                <!-- Motivo dinâmico -->
+                <div
+                  style="
+                    background: #f8fafc;
+                    border-left: 4px solid #dc2626;
+                    padding: 16px;
+                    margin: 24px 0;
+                    border-radius: 6px;
+                  "
+                >
+                  <p style="margin: 0; font-size: 14px; color: #475569">
+                    <strong>Motivo do cancelamento:</strong><br />
+                    <span th:text="${reason}">
+                      Ajustes operacionais foram necessários.
+                    </span>
+                  </p>
+                </div>
+
+                <!-- Nova recomendação -->
+                <p
+                  style="margin: 0 0 16px 0; font-size: 14px; line-height: 1.6"
+                >
+                  Recomendamos que você se inscreva em uma nova viagem. Nosso
+                  sistema irá sugerir automaticamente opções que melhor se
+                  adequem às suas necessidades e ao nível de urgência da sua
+                  solicitação.
+                </p>
+
+                <!-- CTA -->
+                <div style="text-align: center; margin: 24px 0">
+                  <a
+                    href="#"
+                    style="
+                      background: #2563eb;
+                      color: #ffffff;
+                      padding: 12px 20px;
+                      text-decoration: none;
+                      border-radius: 6px;
+                      font-size: 14px;
+                      display: inline-block;
+                    "
+                  >
+                    Buscar nova rota
+                  </a>
+                </div>
+
+                <p style="margin: 24px 0 0 0; font-size: 14px">
+                  Atenciosamente,<br />
+                  <strong>Equipe Rota Fácil</strong>
+                </p>
+              </td>
+            </tr>
+
+            <!-- Footer -->
+            <tr>
+              <td
+                style="
+                  background: #f1f5f9;
+                  padding: 16px 32px;
+                  text-align: center;
+                "
+              >
+                <p style="margin: 0; font-size: 12px; color: #64748b">
+                  Este é um e-mail automático. Não responda diretamente.
+                </p>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
+  </body>
+</html>
