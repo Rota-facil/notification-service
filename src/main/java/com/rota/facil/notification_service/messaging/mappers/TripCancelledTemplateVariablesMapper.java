@@ -1,6 +1,6 @@
 package com.rota.facil.notification_service.messaging.mappers;
 
-import com.rota.facil.notification_service.messaging.dto.receive.TransportRouteCancelledEventReceive;
+import com.rota.facil.notification_service.messaging.dto.receive.transport.TransportRouteCancelledEventReceive;
 import java.util.HashMap;
 import java.util.Map;
 import org.springframework.stereotype.Service;

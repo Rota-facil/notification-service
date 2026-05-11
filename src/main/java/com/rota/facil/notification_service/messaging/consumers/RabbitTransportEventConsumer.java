@@ -1,7 +1,7 @@
 package com.rota.facil.notification_service.messaging.consumers;
 
 import com.rota.facil.notification_service.business.EmailService;
-import com.rota.facil.notification_service.messaging.dto.receive.TransportRouteCancelledEventReceive;
+import com.rota.facil.notification_service.messaging.dto.receive.transport.TransportRouteCancelledEventReceive;
 import com.rota.facil.notification_service.messaging.mappers.TripCancelledTemplateVariablesMapper;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
