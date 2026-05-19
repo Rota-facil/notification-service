@@ -38,7 +38,7 @@ public class EmailService {
 
       mailSender.send(message);
     } catch (Exception e) {
-      log.error("Erro ao enviar email para={}", variables.get("name"), e);
+      log.error("Erro ao enviar email para={}", to, e);
       e.printStackTrace();
     }
   }
