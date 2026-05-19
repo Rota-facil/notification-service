@@ -2,6 +2,7 @@ package com.rota.facil.notification_service.messaging.consumers;
 
 import com.rota.facil.notification_service.business.EmailService;
 import com.rota.facil.notification_service.messaging.dto.receive.transport.TransportRouteCancelledEventReceive;
+import com.rota.facil.notification_service.messaging.dto.receive.transport.TransportUserFeedbackRecieve;
 import com.rota.facil.notification_service.messaging.mappers.TripCancelledTemplateVariablesMapper;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
@@ -63,6 +64,51 @@ public class RabbitTransportEventConsumer {
 
     log.info(
       "Finalizado processamento do envio de emails do evento de rotas canceladas"
+    );
+  }
+
+  @RabbitListener(queues = "${rabbitmq.notification.user.feedback.queue}")
+  public void handleUserFeedback(
+    TransportUserFeedbackRecieve transportUserFeedbackRecieve
+  ) {
+    String subject = "Você recebeu um novo feedback - Rota Fácil";
+    String templatePath = "emails/feedback-received";
+
+    if (
+      transportUserFeedbackRecieve.receiver() == null ||
+      transportUserFeedbackRecieve.receiver().isEmpty()
+    ) {
+      log.warn("Evento de feedback recebido sem reciever");
+
+      return;
+    }
+
+    Map<String, Object> templateVariables = Map.of(
+      "sender",
+      transportUserFeedbackRecieve.sender(),
+      "receiver",
+      transportUserFeedbackRecieve.receiver(),
+      "feedback",
+      transportUserFeedbackRecieve.feedback(),
+      "note",
+      transportUserFeedbackRecieve.note()
+    );
+
+    log.info(
+      "Iniciando envio de email de feedback. reciever={} sender={}",
+      transportUserFeedbackRecieve.receiver(),
+      transportUserFeedbackRecieve.sender()
+    );
+
+    emailService.sendEmail(
+      transportUserFeedbackRecieve.receiver(),
+      subject,
+      templatePath,
+      templateVariables
+    );
+
+    log.info(
+      "Finalizado processamento do envio de email do evento de feedback."
     );
   }
 }
