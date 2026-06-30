@@ -1,10 +1,11 @@
 package com.rota.facil.notification_service.business;
 
+import com.rota.facil.notification_service.messaging.dto.receive.transport.TransportTripCancelledEventReceive;
+import com.rota.facil.notification_service.messaging.mappers.TripCancelledTemplateVariablesMapper;
 import jakarta.mail.internet.MimeMessage;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
@@ -14,10 +15,32 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class EmailService {
 
-  @Autowired
   private final JavaMailSender mailSender;
-
   private final EmailTemplateRender emailTemplateRender;
+
+
+  public void sendEmailTripCancelled(TransportTripCancelledEventReceive event) {
+    String subjectEmail = "A sua viagem foi cancelada";
+    String templatePath = "emails/trip-cancelled";
+
+        event
+            .studentInfo()
+            .stream()
+            .filter(sub -> !sub.email().isBlank() && !sub.name().isBlank())
+            .forEach(sub -> {
+
+              this.sendEmail(
+                      sub.email(),
+                      subjectEmail,
+                      templatePath,
+                      Map.of("name", sub.name())
+              );
+            });
+
+    log.info(
+            "Finalizado processamento do envio de emails do evento de rotas canceladas"
+    );
+  }
 
   public void sendEmail(
     String to,
