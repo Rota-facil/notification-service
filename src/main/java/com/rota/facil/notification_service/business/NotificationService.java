@@ -18,6 +18,13 @@ public class NotificationService {
     private final NotificationRepository notificationRepository;
 
     public void registerTripCancelled(TransportTripCancelledEventReceive event) {
+        this.registerStudentsNotification(event);
+        this.registerDriverNotifications(event);
+        this.registerPrefectureNotifications(event);
+    }
+
+    private void registerStudentsNotification(TransportTripCancelledEventReceive event) {
+        if (event.studentInfo() == null || event.studentInfo().isEmpty()) return;
         List<NotificationEntity> studentsNotifications = event.studentInfo()
                 .stream()
                 .map(student -> NotificationEntity.builder()
@@ -30,8 +37,11 @@ public class NotificationService {
                         .targetId(event.tripId())
                         .targetType(TargetType.TRIP)
                         .build())
-                        .toList();
+                .toList();
+        notificationRepository.saveAll(studentsNotifications);
+    }
 
+    private void registerDriverNotifications(TransportTripCancelledEventReceive event) {
         NotificationEntity driverNotification = NotificationEntity.builder()
                 .recipientType(RecipientType.DRIVER)
                 .recipientId(event.driverId())
@@ -42,7 +52,10 @@ public class NotificationService {
                 .targetId(event.tripId())
                 .targetType(TargetType.TRIP)
                 .build();
+        notificationRepository.save(driverNotification);
+    }
 
+    private void registerPrefectureNotifications(TransportTripCancelledEventReceive event) {
         NotificationEntity prefectureNotification = NotificationEntity.builder()
                 .recipientType(RecipientType.PREFECTURE)
                 .recipientId(event.prefectureId())
@@ -53,10 +66,6 @@ public class NotificationService {
                 .targetId(event.tripId())
                 .targetType(TargetType.TRIP)
                 .build();
-
-
-        notificationRepository.saveAll(studentsNotifications);
-        notificationRepository.save(driverNotification);
         notificationRepository.save(prefectureNotification);
     }
 }

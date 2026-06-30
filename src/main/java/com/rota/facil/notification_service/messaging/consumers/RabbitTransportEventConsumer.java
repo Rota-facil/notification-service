@@ -25,10 +25,6 @@ public class RabbitTransportEventConsumer {
     TransportTripCancelledEventReceive event
   ) {
 
-    if (event.studentInfo() == null || event.studentInfo().isEmpty()) {
-      log.warn("Evento de cancelamento recebido sem subscribers");
-      return;
-    }
     log.info("Iniciando envio de emails de cancelamento. subscribers={}", event.studentInfo().size());
 
     emailService.sendEmailTripCancelled(event);

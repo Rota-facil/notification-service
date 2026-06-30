@@ -20,6 +20,11 @@ public class EmailService {
 
 
   public void sendEmailTripCancelled(TransportTripCancelledEventReceive event) {
+    if (event.studentInfo() == null || event.studentInfo().isEmpty()) {
+      log.warn("Evento de cancelamento recebido sem subscribers, então não vai ser enviado email para eles");
+      return;
+    }
+
     String subjectEmail = "A sua viagem foi cancelada";
     String templatePath = "emails/trip-cancelled";
 
