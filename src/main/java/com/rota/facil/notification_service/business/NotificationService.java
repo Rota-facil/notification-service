@@ -1,13 +1,15 @@
 package com.rota.facil.notification_service.business;
 
-import com.rota.facil.notification_service.domain.enums.NotificationType;
-import com.rota.facil.notification_service.domain.enums.Priority;
-import com.rota.facil.notification_service.domain.enums.RecipientType;
-import com.rota.facil.notification_service.domain.enums.TargetType;
+import com.rota.facil.notification_service.domain.enums.*;
+import com.rota.facil.notification_service.http.dto.request.user.CurrentUser;
+import com.rota.facil.notification_service.http.dto.response.notification.NotificationResponseDTO;
 import com.rota.facil.notification_service.messaging.dto.receive.transport.TransportTripCancelledEventReceive;
 import com.rota.facil.notification_service.persistence.entities.NotificationEntity;
+import com.rota.facil.notification_service.persistence.mappers.NotificationMapper;
 import com.rota.facil.notification_service.persistence.repositories.NotificationRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -16,11 +18,18 @@ import java.util.List;
 @RequiredArgsConstructor
 public class NotificationService {
     private final NotificationRepository notificationRepository;
+    private final NotificationMapper notificationMapper;
 
     public void registerTripCancelled(TransportTripCancelledEventReceive event) {
         this.registerStudentsNotification(event);
         this.registerDriverNotifications(event);
         this.registerPrefectureNotifications(event);
+    }
+
+    public Page<NotificationResponseDTO> listMyNotifications(Pageable pageable, CurrentUser currentUser) {
+        boolean commonUser = currentUser.role().equals(Role.DRIVER.name()) || currentUser.role().equals(Role.STUDENT.name());
+        return notificationRepository.findAllByRecipientId((commonUser) ? currentUser.userId() : currentUser.prefectureId(), pageable)
+                .map(notificationMapper::map);
     }
 
     private void registerStudentsNotification(TransportTripCancelledEventReceive event) {
