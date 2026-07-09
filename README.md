@@ -25,7 +25,8 @@ Exchange `auth.events`:
 
 Exchange `transport.events`:
 
-- `trip.cancelled` -> template `emails/trip-cancelled`
+- `trip.running` -> persiste notificacoes consultaveis de viagem iniciada
+- `trip.cancelled` -> template `emails/trip-cancelled` e persiste notificacoes consultaveis
 - evento de feedback de usuario -> template `emails/feedback-received`
 
 Filas default:
@@ -33,6 +34,7 @@ Filas default:
 - `notification.user.created.queue`
 - `notification.user.deleted.queue`
 - `notification.trip.cancelled.queue`
+- `notification.trip.running.queue`
 - `notification.user.feedback.queue`
 
 ## Templates

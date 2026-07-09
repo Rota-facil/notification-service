@@ -15,19 +15,17 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class RabbitConfig {
-
-  // exchange
-
   @Value("${rabbitmq.transport.exchange}")
   private String transportExchange;
 
   @Value("${rabbitmq.auth.exchange}")
   private String authExchange;
 
-  // Routing key
-
   @Value("${rabbitmq.trip.cancelled.routing.key}")
-  private String routeCancelledRoutingKey;
+  private String tripCancelledRoutingKey;
+
+  @Value("${rabbitmq.trip.running.routing.key}")
+  private String tripRunningRoutingKey;
 
   @Value("${rabbitmq.user.feedback.routing.key}")
   private String userFeedbackRoutingKey;
@@ -38,10 +36,11 @@ public class RabbitConfig {
   @Value("${rabbitmq.user.deleted.routing.key}")
   private String userDeletedRoutingKey;
 
-  // Queues
-
   @Value("${rabbitmq.notification.trip.cancelled.queue}")
   private String tripCancelledQueue;
+
+  @Value("${rabbitmq.notification.trip.running.queue}")
+  private String tripRunningQueue;
 
   @Value("${rabbitmq.notification.user.feedback.queue}")
   private String userFeedbackQueue;
@@ -53,17 +52,12 @@ public class RabbitConfig {
   private String userDeletedQueue;
 
   @Bean
-  public Jackson2JsonMessageConverter messageConverter(
-    ObjectMapper objectMapper
-  ) {
+  public Jackson2JsonMessageConverter messageConverter(ObjectMapper objectMapper) {
     return new Jackson2JsonMessageConverter(objectMapper);
   }
 
   @Bean
-  public RabbitTemplate rabbitListener(
-    ConnectionFactory connectionFactory,
-    Jackson2JsonMessageConverter messageConverter
-  ) {
+  public RabbitTemplate rabbitListener(ConnectionFactory connectionFactory, Jackson2JsonMessageConverter messageConverter) {
     RabbitTemplate template = new RabbitTemplate(connectionFactory);
     template.setMessageConverter(messageConverter);
     return template;
@@ -74,16 +68,11 @@ public class RabbitConfig {
     ConnectionFactory connectionFactory,
     Jackson2JsonMessageConverter messageConverter
   ) {
-    SimpleRabbitListenerContainerFactory simpleRabbitListenerContainerFactory =
-      new SimpleRabbitListenerContainerFactory();
-    simpleRabbitListenerContainerFactory.setConnectionFactory(
-      connectionFactory
-    );
-    simpleRabbitListenerContainerFactory.setMessageConverter(messageConverter);
-    return simpleRabbitListenerContainerFactory;
+    SimpleRabbitListenerContainerFactory factory = new SimpleRabbitListenerContainerFactory();
+    factory.setConnectionFactory(connectionFactory);
+    factory.setMessageConverter(messageConverter);
+    return factory;
   }
-
-  // Instanciação das exchange
 
   @Bean
   public TopicExchange transportExchange() {
@@ -95,41 +84,39 @@ public class RabbitConfig {
     return new TopicExchange(authExchange);
   }
 
-  // Instanciação das binds
+  @Bean
+  public Binding tripCancelledBinding() {
+    return BindingBuilder.bind(this.tripCancelledQueue()).to(this.transportExchange()).with(tripCancelledRoutingKey);
+  }
 
   @Bean
-  public Binding routeCancelledBinding() {
-    return BindingBuilder.bind(this.routeCancelledQueue())
-      .to(this.transportExchange())
-      .with(routeCancelledRoutingKey);
+  public Binding tripRunningBinding() {
+    return BindingBuilder.bind(this.tripRunningQueue()).to(this.transportExchange()).with(tripRunningRoutingKey);
   }
 
   @Bean
   public Binding userFeedbackBinding() {
-    return BindingBuilder.bind(this.userFeedbackQueue())
-      .to(this.transportExchange())
-      .with(userFeedbackRoutingKey);
+    return BindingBuilder.bind(this.userFeedbackQueue()).to(this.transportExchange()).with(userFeedbackRoutingKey);
   }
 
   @Bean
   public Binding userCreatedBinding() {
-    return BindingBuilder.bind(this.userCreatedQueue())
-      .to(this.authExchange())
-      .with(this.userCreatedRoutingKey);
+    return BindingBuilder.bind(this.userCreatedQueue()).to(this.authExchange()).with(this.userCreatedRoutingKey);
   }
 
   @Bean
   public Binding userDeletedBinding() {
-    return BindingBuilder.bind(this.userDeletedQueue())
-      .to(this.authExchange())
-      .with(this.userDeletedRoutingKey);
+    return BindingBuilder.bind(this.userDeletedQueue()).to(this.authExchange()).with(this.userDeletedRoutingKey);
   }
 
-  // Instanciação das Queues
+  @Bean
+  public Queue tripCancelledQueue() {
+    return new Queue(tripCancelledQueue);
+  }
 
   @Bean
-  public Queue routeCancelledQueue() {
-    return new Queue(tripCancelledQueue);
+  public Queue tripRunningQueue() {
+    return new Queue(tripRunningQueue);
   }
 
   @Bean
