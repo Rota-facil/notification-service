@@ -31,14 +31,14 @@ public class EmailService {
         event
             .studentInfo()
             .stream()
-            .filter(sub -> !sub.email().isBlank() && !sub.name().isBlank())
+            .filter(sub -> sub != null && sub.email() != null && !sub.email().isBlank())
             .forEach(sub -> {
 
               this.sendEmail(
                       sub.email(),
                       subjectEmail,
                       templatePath,
-                      Map.of("name", sub.name())
+                      Map.of("name", "passageiro")
               );
             });
 
@@ -53,9 +53,8 @@ public class EmailService {
     String templatePath,
     Map<String, Object> variables
   ) {
-    String emailTemplate = emailTemplateRender.render(templatePath, variables);
-
     try {
+      String emailTemplate = emailTemplateRender.render(templatePath, variables);
       MimeMessage message = mailSender.createMimeMessage();
       MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
 
@@ -67,7 +66,6 @@ public class EmailService {
       mailSender.send(message);
     } catch (Exception e) {
       log.error("Erro ao enviar email para={}", to, e);
-      e.printStackTrace();
     }
   }
 }

@@ -20,15 +20,25 @@ public class RabbitTransportEventConsumer {
 
   @RabbitListener(queues = "${rabbitmq.notification.trip.cancelled.queue}")
   public void handlerTripCancelled(TransportTripCancelledEventReceive event) {
-    log.info("Iniciando envio de emails de cancelamento. subscribers={}", event.studentInfo().size());
-    emailService.sendEmailTripCancelled(event);
-    notificationService.registerTripCancelled(event);
+    try {
+      int subscribers = event.studentInfo() != null ? event.studentInfo().size() : 0;
+      log.info("Iniciando processamento de viagem cancelada. tripId={} subscribers={}", event.tripId(), subscribers);
+      emailService.sendEmailTripCancelled(event);
+      notificationService.registerTripCancelled(event);
+      log.info("Finalizado processamento de viagem cancelada. tripId={}", event.tripId());
+    } catch (Exception exception) {
+      log.error("Erro ao processar evento de viagem cancelada. tripId={}. Evento sera descartado para evitar reprocessamento em loop.", event != null ? event.tripId() : null, exception);
+    }
   }
 
   @RabbitListener(queues = "${rabbitmq.notification.trip.running.queue}")
   public void handlerTripRunning(TransportTripRunningEventReceive event) {
-    log.info("Registrando notificacoes de viagem iniciada. subscribers={}", event.studentInfo() != null ? event.studentInfo().size() : 0);
-    notificationService.registerTripRunning(event);
+    try {
+      log.info("Registrando notificacoes de viagem iniciada. subscribers={}", event.studentInfo() != null ? event.studentInfo().size() : 0);
+      notificationService.registerTripRunning(event);
+    } catch (Exception exception) {
+      log.error("Erro ao processar evento de viagem iniciada. tripId={}. Evento sera descartado para evitar reprocessamento em loop.", event != null ? event.tripId() : null, exception);
+    }
   }
 
   @RabbitListener(queues = "${rabbitmq.notification.user.feedback.queue}")

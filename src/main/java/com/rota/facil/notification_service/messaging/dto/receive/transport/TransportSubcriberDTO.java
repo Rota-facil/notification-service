@@ -4,6 +4,5 @@ import java.util.UUID;
 
 public record TransportSubcriberDTO(
         UUID id,
-        String name,
         String email
 ) {}
